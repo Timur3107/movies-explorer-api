@@ -19,13 +19,13 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(cors);
-app.use(helmet());
+app.use(requestLogger);
 app.use(limiter);
 
-mongoose.connect(NODE_ENV === 'production' ? DB_URL : DB_URL_DEV);
+app.use(cors);
+app.use(helmet());
 
-app.use(requestLogger);
+mongoose.connect(NODE_ENV === 'production' ? DB_URL : DB_URL_DEV);
 
 // app.use('/', require('./routes/users'));
 // app.use('/', require('./routes/movies'));
