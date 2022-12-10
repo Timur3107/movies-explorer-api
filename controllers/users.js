@@ -2,11 +2,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
+const { JWT_SECRET_DEV } = require('../utils/config');
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const NotFoundError = require('../errors/NotFoundError');
 const IncrorrectDataError = require('../errors/IncrorrectDataError');
 const ConflictError = require('../errors/ConflictError');
+
+const { notFoundMessage, incorrectDataMessage, conflictMessage } = require('../utils/constants');
 
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
@@ -15,7 +19,7 @@ module.exports.getUserMe = (req, res, next) => {
         res.send({ data: user });
         return;
       }
-      throw new NotFoundError('Пользователь не найден!');
+      throw new NotFoundError(notFoundMessage);
     })
     .catch(next);
 };
@@ -34,10 +38,10 @@ module.exports.updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new IncrorrectDataError('Переданы некорректные данные при обновлении профиля!'));
+        return next(new IncrorrectDataError(incorrectDataMessage));
       }
       if (err.name === 'CastError') {
-        return next(new NotFoundError('Некорректный _id!'));
+        return next(new NotFoundError(notFoundMessage));
       }
       return next(err);
     });
@@ -65,10 +69,10 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        return next(new ConflictError('Такой пользователь уже существует!'));
+        return next(new ConflictError(conflictMessage));
       }
       if (err.name === 'ValidationError') {
-        return next(new IncrorrectDataError('Переданы некорректные данные при создании пользователя!'));
+        return next(new IncrorrectDataError(incorrectDataMessage));
       }
       return next(err);
     });
@@ -79,7 +83,7 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : JWT_SECRET_DEV, { expiresIn: '7d' });
       res.send({ token });
     })
 

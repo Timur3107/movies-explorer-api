@@ -4,6 +4,10 @@ const NotFoundError = require('../errors/NotFoundError');
 const IncrorrectDataError = require('../errors/IncrorrectDataError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
+const {
+  notFoundMessage, incorrectDataMessage, forbiddenMessage, removeFilmMessage,
+} = require('../utils/constants');
+
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})
     .then((films) => {
@@ -46,7 +50,7 @@ module.exports.createMovie = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new IncrorrectDataError('Переданы некорректные данные при создании фильма!'));
+        return next(new IncrorrectDataError(incorrectDataMessage));
       }
       return next(err);
     });
@@ -56,19 +60,19 @@ module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.filmId)
     .then((film) => {
       if (!film) {
-        throw new NotFoundError('Сохранённый фильм не найден!');
+        throw new NotFoundError(notFoundMessage);
       }
       if (req.user._id !== film.owner.toString()) {
-        throw new ForbiddenError('Вы не можете удалить чужой сохранённый фильм!');
+        throw new ForbiddenError(forbiddenMessage);
       }
       return film.remove();
     })
     .then(() => {
-      res.send({ message: 'Сохранённый фильм была удален!' });
+      res.send({ message: removeFilmMessage });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new IncrorrectDataError('Переданы некорректные данные при удалении сохраненного фильма!'));
+        return next(new IncrorrectDataError(incorrectDataMessage));
       }
       return next(err);
     });
