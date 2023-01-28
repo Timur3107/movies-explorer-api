@@ -13,7 +13,7 @@ const cors = require('./middlewares/cors');
 const router = require('./routes/index');
 const { DB_URL_DEV } = require('./utils/config');
 
-const { PORT = 3000, NODE_ENV, DB_URL } = process.env;
+const { PORT = 3001, NODE_ENV, DB_URL } = process.env;
 const app = express();
 
 app.use(bodyParser.json());

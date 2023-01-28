@@ -1,6 +1,6 @@
 const allowedCors = [
-  'https://movies-explorer.gin.nomoredomains.club',
-  'http://movies-explorer.gin.nomoredomains.club',
+  'https://movies-explorer.gin.nomoredomains.rocks',
+  'http://movies-explorer.gin.nomoredomains.rocks',
   'http://localhost:3000',
   'http://localhost:3001',
   'https://api.movies-explorer.gin.nomoredomains.club',
