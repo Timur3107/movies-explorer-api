@@ -43,6 +43,9 @@ module.exports.updateUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new NotFoundError(notFoundMessage));
       }
+      if (err.code === 11000) {
+        return next(new ConflictError(conflictMessage));
+      }
       return next(err);
     });
 };
